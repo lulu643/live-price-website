@@ -1,5 +1,5 @@
 // chart.js
-var durationSeconds = 2 * 60; // 2 minutes: remember to change this part when every function is tested
+var durationSeconds = 24 * 60 * 60; // 2 minutes: remember to change this part after every function is tested
 
 window.onload = function() {
     var binanceSocket = new WebSocket('wss://stream.binance.us:9443/ws/btcusdt@kline_1s');
@@ -40,10 +40,12 @@ window.onload = function() {
 
     var priceChangeDiv = document.getElementById('priceChange');
     var initialPrice = null;
+    var initialTimestamp = null;
 
     var volCalc = new SDCalculator();
 
     var data = [];
+    var lastPrice = null;
 
     binanceSocket.onmessage = function(event) {
         console.log(event.data);
@@ -51,8 +53,9 @@ window.onload = function() {
         var messageObject = JSON.parse(event.data);
 
         var time = messageObject.k.t / 1000;
-        var close = parseFloat(messageObject.k.c);
 
+        var close = parseFloat(messageObject.k.c);
+    
         data.push({ time: time, value: close });
 
         var oneDayAgo = Date.now() / 1000 - durationSeconds;
